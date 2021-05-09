@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        #myCanvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let canvas = document.getElementById("myCanvas");
+            // 检测设备是否拥有触屏功能的变量
+            let isTouchDevice = "ontouchstart" in document.documentElement;
+            // 获取设备尺寸
+            let deviceWidth = document.documentElement.clientWidth;
+            let deviceHeight = document.documentElement.clientHeight;
+            canvas.width = deviceWidth;
+            canvas.height = deviceHeight;
+
+            // 画布实例
+            let ctx = canvas.getContext("2d");
+            // 填充颜色(背景)
+            ctx.fillStyle = "red";
+            // 笔触(边框)
+            ctx.strokeStyle = "red";
+            // 线条宽度
+            ctx.lineWidth = 16;
+            // 线条的结束点样式
+            ctx.lineCap = "round";
+
+            // canvas绘制直线函数 drawLine(上一个X坐标, 上一个Y坐标, 下一个X坐标, 下一个Y坐标)
+            function drawLine(x1, y1, x2, y2) {
+                // 起始路径
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            let last;
+            // 判断设备类型
+            if (!isTouchDevice) {
+                let flag = false;
+                canvas.addEventListener("mousedown", (e) => {
+                    flag = true;
+                    // 上一个鼠标经过的坐标，这里是第一次出现的坐标
+                    last = [e.pageX, e.pageY];
+                });
+                canvas.addEventListener("mousemove", (e) => {
+                    if (flag === true) {
+                        drawLine(last[0], last[1], e.pageX, e.pageY);
+                        // 上一个坐标不断变化
+                        last = [e.pageX, e.pageY];
+                    }
+                });
+                canvas.addEventListener("mouseup", () => {
+                    // 停止绘制
+                    flag = false;
+                })
+            } else {
+                canvas.addEventListener("touchstart", (e) => {
+                    last = [e.touches[0].pageX, e.touches[0].pageY];
+                })
+                canvas.addEventListener("touchmove", (e) => {
+                    drawLine(last[0], last[1], e.touches[0].pageX, e.touches[0].pageY);
+                    last = [e.touches[0].pageX, e.touches[0].pageY]
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>
